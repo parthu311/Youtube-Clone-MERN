@@ -25,10 +25,10 @@ const getVideoById = async (req, res) => {
 
 // Add a video
 const addVideo = async (req, res) => {
-  const { title, description, thumbnailUrl, videoUrl, channelId } = req.body;
+  const { title, description, thumbnailUrl, videoUrl, channel } = req.body;
 
   try {
-    const video = new Video({ title, description, thumbnailUrl, videoUrl, channelId });
+    const video = new Video({ title, description, thumbnailUrl, videoUrl, channel });
     await video.save();
     res.status(201).json({ message: "Video added successfully", video });
   } catch (error) {

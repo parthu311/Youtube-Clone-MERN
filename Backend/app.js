@@ -1,3 +1,4 @@
+// app.js
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
@@ -14,15 +15,18 @@ dotenv.config();
 // Initialize app
 const app = express();
 
-// Middlewares
+// Middleware
 app.use(cors());
-app.use(express.json()); // Parse JSON request body
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded data
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev")); // Log requests in development mode
+  app.use(morgan("dev"));
 }
 
 // Routes
+app.get("/", (req, res) => {
+  res.send("Welcome to the YouTube Clone API!");
+});
 app.use("/api/auth", authRoutes);
 app.use("/api/videos", videoRoutes);
 app.use("/api/channels", channelRoutes);
