@@ -7,155 +7,82 @@ const ChannelDetails = () => {
   const [channel, setChannel] = useState(null);
   const [videos, setVideos] = useState([]);
   const [error, setError] = useState("");
-  const [newVideo, setNewVideo] = useState({
-    title: "",
-    description: "",
-    thumbnailUrl: "",
-    videoUrl: "",
-  });
 
   useEffect(() => {
-    // Fetch channel details
     const fetchChannelDetails = async () => {
       try {
-        const response = await API.get(`/channels/${id}`);
-        setChannel(response.data);
-      } catch (error) {
-        setError("Failed to load channel details.");
-      }
-    };
+        const channelResponse = await API.get(`/channels/${id}`);
+        setChannel(channelResponse.data);
 
-    // Fetch videos by channel
-    const fetchVideos = async () => {
-      try {
-        const response = await API.get(`/videos/channel/${id}`);
-        setVideos(response.data);
+        const videoResponse = await API.get(`/videos/channel/${id}`);
+        setVideos(videoResponse.data);
       } catch (error) {
-        setError("Failed to load videos.");
+        console.error("Error fetching channel or videos:", error);
+        setError("Failed to load channel details or videos.");
       }
     };
 
     fetchChannelDetails();
-    fetchVideos();
   }, [id]);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewVideo((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleAddVideo = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await API.post("/videos", {
-        ...newVideo,
-        channel: id, // Associate video with the channel
-      });
-      setVideos((prev) => [...prev, response.data.video]); // Add new video to the list
-      setNewVideo({ title: "", description: "", thumbnailUrl: "", videoUrl: "" }); // Reset form
-    } catch (error) {
-      setError("Failed to add video.");
-    }
-  };
 
   if (error) {
     return <p className="text-center text-red-600">{error}</p>;
   }
 
   if (!channel) {
-    return <p className="text-center">Loading...</p>;
+    return <p className="text-center">Loading channel details...</p>;
   }
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg">
-        <h1 className="text-2xl font-bold text-gray-700">{channel.channelName}</h1>
-        <p className="text-gray-600 mt-4">{channel.description}</p>
-        {channel.channelBanner && (
-          <img
-            src={channel.channelBanner}
-            alt={channel.channelName}
-            className="w-full h-64 object-cover mt-6 rounded-md"
-          />
-        )}
-
-        {/* Add Video Form */}
-        <form onSubmit={handleAddVideo} className="mt-6 space-y-4">
-          <h2 className="text-xl font-bold text-gray-700">Add New Video</h2>
-          <input
-            type="text"
-            name="title"
-            value={newVideo.title}
-            onChange={handleInputChange}
-            placeholder="Video Title"
-            className="w-full p-2 border rounded"
-            required
-          />
-          <textarea
-            name="description"
-            value={newVideo.description}
-            onChange={handleInputChange}
-            placeholder="Video Description"
-            className="w-full p-2 border rounded"
-            required
-          />
-          <input
-            type="text"
-            name="thumbnailUrl"
-            value={newVideo.thumbnailUrl}
-            onChange={handleInputChange}
-            placeholder="Thumbnail URL"
-            className="w-full p-2 border rounded"
-            required
-          />
-          <input
-            type="text"
-            name="videoUrl"
-            value={newVideo.videoUrl}
-            onChange={handleInputChange}
-            placeholder="Video URL"
-            className="w-full p-2 border rounded"
-            required
-          />
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-          >
-            Add Video
-          </button>
-        </form>
-
-        {/* Videos List */}
-        <div className="mt-6">
-          <h2 className="text-xl font-bold text-gray-700">Videos</h2>
-          {videos.length === 0 ? (
-            <p className="text-gray-600">No videos available.</p>
-          ) : (
-            <div className="space-y-4">
-              {videos.map((video) => (
-                <div key={video._id} className="p-4 bg-gray-100 rounded shadow">
-                  <h3 className="font-bold">{video.title}</h3>
-                  <p>{video.description}</p>
-                  {video.thumbnailUrl && (
-                    <img
-                      src={video.thumbnailUrl}
-                      alt={video.title}
-                      className="w-full h-32 object-cover mt-2 rounded"
-                    />
-                  )}
-                  <a
-                    href={video.videoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 mt-2 inline-block"
-                  >
-                    Watch Video
-                  </a>
-                </div>
-              ))}
-            </div>
+      <div className="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+        <div className="relative">
+          {channel.channelBanner && (
+            <img
+              src={channel.channelBanner}
+              alt={channel.channelName}
+              className="w-full h-48 object-cover rounded-md"
+            />
           )}
+          <div className="absolute bottom-0 left-0 p-4 bg-gradient-to-t from-black to-transparent rounded-md mb-4">
+            <h1 className="text-3xl font-bold text-white">{channel.channelName}</h1>
+            <p className="text-gray-300 mt-2">{channel.description}</p>
+          </div>
         </div>
+
+        <h2 className="text-2xl font-semibold mt-8 mb-4">Videos</h2>
+        {videos.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {videos.map((video) => (
+              <div
+                key={video._id}
+                className="bg-white rounded-lg shadow-md overflow-hidden"
+              >
+                <Link to={`/videos/${video._id}`}>
+                  <img
+                    src={video.thumbnail || "default-thumbnail.jpg"}
+                    alt={video.title}
+                    className="w-full h-40 object-cover"
+                  />
+                </Link>
+                <div className="p-4">
+                  <h3 className="text-xl font-semibold truncate">{video.title}</h3>
+                  <p className="text-gray-600 mt-2">{video.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center mt-8">
+            <p className="text-gray-600">No videos found for this channel.</p>
+            <Link
+              to={`/add-video/${id}`}
+              className="mt-4 inline-block px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+            >
+              Add Video
+            </Link>
+          </div>
+        )}
 
         <Link to="/channels" className="text-blue-500 mt-6 inline-block">
           Back to Channels

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { loginUser } from "../../services/api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -67,6 +67,16 @@ const Login = () => {
         {message && (
           <p className="mt-4 text-center text-sm text-red-600">{message}</p>
         )}
+        
+        {/* Register Button */}
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-700">
+            Don't have an account?{" "}
+            <Link to="/register" className="text-blue-500 hover:text-blue-700">
+              Register
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

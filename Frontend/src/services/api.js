@@ -38,9 +38,30 @@ export const getChannelById = (channelId) => API.get(`/channels/${channelId}`);
 export const createChannel = (channelData) => API.post("/channels", channelData);
 
 // Function to update a channel
-export const updateChannel = (channelId, updatedData) => API.put(`/channels/${channelId}`, updatedData);
+export const updateChannel = (channelId, updatedData) =>
+  API.put(`/channels/${channelId}`, updatedData);
 
 // Function to delete a channel
 export const deleteChannel = (channelId) => API.delete(`/channels/${channelId}`);
+
+// Function to get videos by channel
+export const getVideosByChannel = (channelId) =>
+  API.get(`/videos/channel/${channelId}`);
+
+// Function to get video details by ID
+export const getVideoById = (videoId) => API.get(`/videos/${videoId}`);
+
+// Function to like a video
+export const likeVideo = (videoId) => API.post(`/videos/${videoId}/like`);
+
+// Function to dislike a video
+export const dislikeVideo = (videoId) => API.post(`/videos/${videoId}/dislike`);
+
+// Function to add a comment to a video
+export const addComment = (videoId, commentData) =>
+  API.post(`/videos/${videoId}/comments`, commentData);
+
+// Function to add a video
+export const addVideo = (videoData) => API.post("/videos", videoData);
 
 export default API;

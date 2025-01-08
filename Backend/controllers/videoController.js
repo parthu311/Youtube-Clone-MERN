@@ -1,4 +1,5 @@
 const Video = require("../models/Video");
+const mongoose = require("mongoose");
 
 // Get all videos
 const getAllVideos = async (req, res) => {
@@ -12,12 +13,31 @@ const getAllVideos = async (req, res) => {
 
 // Get a video by ID
 const getVideoById = async (req, res) => {
+  const { id } = req.params;  // Extract video ID from the route params
+
   try {
-    const video = await Video.findById(req.params.id);
+    const video = await Video.findById(id);  // Find the video by ID
     if (!video) {
       return res.status(404).json({ message: "Video not found" });
     }
-    res.status(200).json(video);
+    res.json(video);  // Send the video data as JSON
+  } catch (error) {
+    console.error("Error fetching video:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Get videos by channel
+const getVideosByChannel = async (req, res) => {
+  const { channelId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(channelId)) {
+    return res.status(400).json({ message: "Invalid channel ID." });
+  }
+
+  try {
+    const videos = await Video.find({ channel: channelId }).populate("channel", "channelName");
+    res.status(200).json(videos.length ? videos : []);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
@@ -62,4 +82,11 @@ const deleteVideo = async (req, res) => {
   }
 };
 
-module.exports = { getAllVideos, getVideoById, addVideo, updateVideo, deleteVideo };
+module.exports = {
+  getAllVideos,
+  getVideoById,
+  getVideosByChannel,
+  addVideo,
+  updateVideo,
+  deleteVideo,
+};
