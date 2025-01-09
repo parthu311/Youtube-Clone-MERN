@@ -34,6 +34,7 @@ const ChannelDetails = () => {
   }
 
   return (
+    <>
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-lg">
         <div className="relative">
@@ -71,7 +72,28 @@ const ChannelDetails = () => {
                 </div>
               </div>
             ))}
+             <Link
+  to={`/add-video/${id}`}
+  className="mt-4 inline-block px-6 py-3 bg-blue-500 text-white text-xl font-bold rounded-md hover:bg-blue-600 text-center flex items-center justify-center"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    className="w-6 h-6 mr-2"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25V9m10.5 6.75v-3m0 0v-3m0 6H5.25a2.25 2.25 0 01-2.25-2.25v-3A2.25 2.25 0 015.25 6.75H9M21 15.75h-3"
+    />
+  </svg>
+  Add Video
+</Link>
           </div>
+          
         ) : (
           <div className="text-center mt-8">
             <p className="text-gray-600">No videos found for this channel.</p>
@@ -89,6 +111,7 @@ const ChannelDetails = () => {
         </Link>
       </div>
     </div>
+    </>
   );
 };
 
