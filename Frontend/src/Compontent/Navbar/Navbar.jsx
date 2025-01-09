@@ -11,36 +11,46 @@ import { Link } from 'react-router-dom';
 
 const Navbar = ({ setSidebar, loggedIn }) => {
   return (
-    <>
-      <nav className='flex-div'>
-        <div className="nav-left flex-div">
-          <img className='menu-icon' onClick={() => setSidebar(prev => prev === false ? true : false)} src={menu_icon} alt="menu" />
-          <Link to='./'><img className='logo' src={logo} alt="logo" /></Link>
-        </div>
+    <nav className='flex-div'>
+      {/* Left Section */}
+      <div className="nav-left flex-div">
+        <img
+          className='menu-icon'
+          onClick={() => setSidebar(prev => !prev)}
+          src={menu_icon}
+          alt="menu"
+        />
+        <Link to='./'>
+          <img className='logo' src={logo} alt="logo" />
+        </Link>
+      </div>
 
-        <div className="nav-middle flex-div">
-          <div className="search-box flex-div">
-            <input type="text" placeholder='Search' />
-            <img src={search_icon} alt="search" />
-          </div>
+      {/* Middle Section */}
+      <div className="nav-middle flex-div">
+        <div className="search-box flex-div">
+          <input type="text" placeholder='Search' />
+          <img src={search_icon} alt="search" />
         </div>
+      </div>
 
-        <div className="nav-right flex-div">
-          <img src={upload_icon} alt="upload" />
-          <img src={more_icon} alt="more" />
-          <img src={notification_icon} alt="notification" />
+      {/* Right Section */}
+      <div className="nav-right flex-div">
+        <img src={upload_icon} alt="upload" />
+        <img src={more_icon} alt="more" />
+        <img src={notification_icon} alt="notification" />
 
-          {/* Conditionally render profile icon or login text */}
-          {loggedIn ? (
-            <Link to='/profile'>
-              <img src={profile_icon} className='user-icon' alt="profile" />
-            </Link>
-          ) : (
-            <Link to='/login' className='login-link'>Login</Link>
-          )}
-        </div>
-      </nav>
-    </>
+        {/* Conditionally Render Profile Icon or Login Button */}
+        {loggedIn ? (
+          <Link to='/profile'>
+            <img src={profile_icon} className='user-icon' alt="profile" />
+          </Link>
+        ) : (
+          <Link to='/login' className='login-button'>
+            <button className="btn-primary">Login</button>
+          </Link>
+        )}
+      </div>
+    </nav>
   );
 };
 
