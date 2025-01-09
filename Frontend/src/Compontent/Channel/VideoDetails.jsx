@@ -1,20 +1,53 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getVideoById, likeVideo, dislikeVideo, addComment } from "../../services/api";
 
+// Mocked APIs
+const mockVideoData = {
+  title: "Sample Video",
+  description: "This is a sample video description.",
+  url: "https://www.w3schools.com/html/mov_bbb.mp4",
+  likes: 10,
+  dislikes: 2,
+  comments: [
+    { _id: "comment1", text: "Great video!" },
+    { _id: "comment2", text: "Loved it!" },
+  ],
+};
+
+const getVideoById = async (videoId) => {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve({ data: mockVideoData }), 500);
+  });
+};
+
+const likeVideo = async (videoId) => {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve({ data: { success: true } }), 200);
+  });
+};
+
+const dislikeVideo = async (videoId) => {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve({ data: { success: true } }), 200);
+  });
+};
+
+const addComment = async (videoId, { text }) => {
+  return new Promise((resolve) => {
+    const newComment = { _id: `comment${Date.now()}`, text };
+    setTimeout(() => resolve({ data: newComment }), 200);
+  });
+};
+
+// VideoDetailsPage Component
 const VideoDetailsPage = () => {
-  const { videoId } = useParams();  // Extract videoId from URL params
+  const { videoId } = useParams(); // Extract videoId from URL params
   const [video, setVideo] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
 
   useEffect(() => {
-    // Fetch video details when videoId changes
     const fetchVideoDetails = async () => {
-      if (!videoId) {
-        console.error("videoId is undefined");  // Log the error if videoId is undefined
-        return;
-      }
       try {
         const response = await getVideoById(videoId);
         setVideo(response.data);
@@ -25,7 +58,7 @@ const VideoDetailsPage = () => {
     };
 
     fetchVideoDetails();
-  }, [videoId]);  // Re-run the effect when videoId changes
+  }, [videoId]);
 
   const handleLike = async () => {
     try {
@@ -70,20 +103,11 @@ const VideoDetailsPage = () => {
           onClick={handleLike}
           className="flex items-center text-lg text-gray-600 hover:text-blue-600 focus:outline-none mr-4"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/4926/4926585.png"
+            alt="Like"
             className="w-6 h-6 mr-2"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M5 15l7-7 7 7"
-            />
-          </svg>
+          />
           Like ({video.likes})
         </button>
 
@@ -92,20 +116,11 @@ const VideoDetailsPage = () => {
           onClick={handleDislike}
           className="flex items-center text-lg text-gray-600 hover:text-red-600 focus:outline-none"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
+          <img
+            src="https://image.similarpng.com/very-thumbnail/2020/08/Dislike-icon-on-transparent-PNG.png"
+            alt="Dislike"
             className="w-6 h-6 mr-2"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
+          />
           Dislike ({video.dislikes})
         </button>
       </div>

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import API from "../../services/api";
 
 const ChannelDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [channel, setChannel] = useState(null);
   const [videos, setVideos] = useState([]);
   const [error, setError] = useState("");
@@ -25,6 +26,18 @@ const ChannelDetails = () => {
     fetchChannelDetails();
   }, [id]);
 
+  const handleDelete = async (videoId) => {
+    if (window.confirm("Are you sure you want to delete this video?")) {
+      try {
+        await API.delete(`/videos/${videoId}`);
+        setVideos((prev) => prev.filter((video) => video._id !== videoId));
+      } catch (error) {
+        console.error("Error deleting video:", error);
+        alert("Failed to delete the video. Please try again.");
+      }
+    }
+  };
+
   if (error) {
     return <p className="text-center text-red-600">{error}</p>;
   }
@@ -34,7 +47,6 @@ const ChannelDetails = () => {
   }
 
   return (
-    <>
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-lg">
         <div className="relative">
@@ -49,7 +61,12 @@ const ChannelDetails = () => {
             <h1 className="text-3xl font-bold text-white">{channel.channelName}</h1>
             <p className="text-gray-300 mt-2">{channel.description}</p>
           </div>
-        </div>
+        </div><Link
+              to={`/add-video/${id}`}
+              className="mt-4 inline-block px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+            >
+              Add Video
+            </Link>
 
         <h2 className="text-2xl font-semibold mt-8 mb-4">Videos</h2>
         {videos.length > 0 ? (
@@ -61,7 +78,7 @@ const ChannelDetails = () => {
               >
                 <Link to={`/videos/${video._id}`}>
                   <img
-                    src={video.thumbnail || "default-thumbnail.jpg"}
+                    src={video.thumbnail || "https://www.nsbpictures.com/wp-content/uploads/2021/01/background-for-thumbnail-youtube-2.png"}
                     alt={video.title}
                     className="w-full h-40 object-cover"
                   />
@@ -69,31 +86,28 @@ const ChannelDetails = () => {
                 <div className="p-4">
                   <h3 className="text-xl font-semibold truncate">{video.title}</h3>
                   <p className="text-gray-600 mt-2">{video.description}</p>
+
+                  <div className="flex justify-between items-center mt-4">
+                    {/* Edit Button */}
+                    <Link
+                      to={`/edit-video/${video._id}`}
+                      className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
+                    >
+                      Edit
+                    </Link>
+
+                    {/* Delete Button */}
+                    <button
+                      onClick={() => handleDelete(video._id)}
+                      className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
-             <Link
-  to={`/add-video/${id}`}
-  className="mt-4 inline-block px-6 py-3 bg-blue-500 text-white text-xl font-bold rounded-md hover:bg-blue-600 text-center flex items-center justify-center"
->
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-    className="w-6 h-6 mr-2"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25V9m10.5 6.75v-3m0 0v-3m0 6H5.25a2.25 2.25 0 01-2.25-2.25v-3A2.25 2.25 0 015.25 6.75H9M21 15.75h-3"
-    />
-  </svg>
-  Add Video
-</Link>
           </div>
-          
         ) : (
           <div className="text-center mt-8">
             <p className="text-gray-600">No videos found for this channel.</p>
@@ -111,7 +125,6 @@ const ChannelDetails = () => {
         </Link>
       </div>
     </div>
-    </>
   );
 };
 
